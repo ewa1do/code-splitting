@@ -1,45 +1,35 @@
 import { useState } from 'react'
-import Page1 from './components/Page1'
+import AsyncComponent from './components/AsyncComponent'
 
 import './App.css'
 
-// * CODE SPLITTING REACT
+// * CODE SPLITTING REACT WITH Higher Order Component
 function App() {
     const [router, setRouter] = useState({
         route: 'page1',
-        Component: Page1,
+        Component: null,
     })
 
-    const changeComponent = async (path = '') => {
-        const module = await import(path)
-        return module.default
-    }
-
-    changeComponent('./components/Page2.jsx')
-
     const onRouteChange = async (route) => {
-        // no Code Splitting
-        //* setRouter({ route: route })
-
-        // * with code splitting
-
-        if (router.route === 'page1') {
-            setRouter({ ...router, route })
-        } else if (router.route === 'page2') {
-            const Page2 = await changeComponent('./components/Page2.jsx')
-            setRouter({ ...router, route, Component: Page2 })
-        } else if (router.route === 'page3') {
-            const Page3 = await changeComponent('./components/Page3.jsx')
-            setRouter({ ...router, route, Component: Page3 })
-        }
+        setRouter({ route: route })
     }
 
     if (router.route === 'page1') {
-        return <Page1 onRouteChange={onRouteChange} />
+        const AsyncPage1 = AsyncComponent(() =>
+            import('./components/Page1.jsx')
+        )
+        return <AsyncPage1 onRouteChange={onRouteChange} />
     } else if (router.route === 'page2') {
-        return <router.Component onRouteChange={onRouteChange} />
+        const AsyncPage2 = AsyncComponent(() =>
+            import('./components/Page2.jsx')
+        )
+        return <AsyncPage2 onRouteChange={onRouteChange} />
     } else if (router.route === 'page3') {
-        return <router.Component onRouteChange={onRouteChange} />
+        const AsyncPage3 = AsyncComponent(() =>
+            import('./components/Page3.jsx')
+        )
+
+        return <AsyncPage3 onRouteChange={onRouteChange} />
     }
 
     return null
