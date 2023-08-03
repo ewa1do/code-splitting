@@ -8,11 +8,15 @@
 
 > How to deliver JavaScript Files in the most efficient way possible?
 
+![](https://github.com/ewa1do/code-splitting/blob/main/holygrial.png)
+
 **Time to first meaningful paint**:
 Something that's shown to the screen right away for the user
 
 **Time to interactive**:
 User to be able to interact with our website as soon as possible
+
+![](https://github.com/ewa1do/code-splitting/blob/main/codesplitting.png)
 
 You wanna sent out a minimaly functional page compose just of html, javascript and css needed for the current route. As more resources arrive the page can lazy-load or unlock more features.
 
