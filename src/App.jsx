@@ -1,38 +1,48 @@
-import { useState } from 'react'
-import AsyncComponent from './components/AsyncComponent'
+import { useState, lazy, Suspense } from 'react'
+
+import Page1 from './components/Page1'
+
+const Page2Lazy = lazy(() => import('./components/Page2.jsx'))
+const Page3Lazy = lazy(() => import('./components/Page3.jsx'))
 
 import './App.css'
 
-// * CODE SPLITTING REACT WITH Higher Order Component
+// * CODE SPLITTING REACT WITH Lazy Loading
 function App() {
     const [router, setRouter] = useState({
         route: 'page1',
-        Component: null,
+        Component: Page1,
     })
 
     const onRouteChange = async (route) => {
-        setRouter({ route: route })
+        if (router.route === 'page1') {
+            setRouter({ ...router, route: route })
+        } else if (router.route === 'page2') {
+            setRouter({ ...router, route, Component: Page2Lazy })
+        } else if (router.route === 'page3') {
+            setRouter({ ...router, route, Component: Page3Lazy })
+        }
     }
 
     if (router.route === 'page1') {
-        const AsyncPage1 = AsyncComponent(() =>
-            import('./components/Page1.jsx')
-        )
-        return <AsyncPage1 onRouteChange={onRouteChange} />
+        return <Page1 onRouteChange={onRouteChange} />
     } else if (router.route === 'page2') {
-        const AsyncPage2 = AsyncComponent(() =>
-            import('./components/Page2.jsx')
+        const { Component } = router
+
+        return (
+            <Suspense fallback={<div>Loading...</div>}>
+                <Component onRouteChange={onRouteChange} />
+            </Suspense>
         )
-        return <AsyncPage2 onRouteChange={onRouteChange} />
     } else if (router.route === 'page3') {
-        const AsyncPage3 = AsyncComponent(() =>
-            import('./components/Page3.jsx')
+        const { Component } = router
+
+        return (
+            <Suspense fallback={<div>Loading...</div>}>
+                <Component onRouteChange={onRouteChange} />
+            </Suspense>
         )
-
-        return <AsyncPage3 onRouteChange={onRouteChange} />
     }
-
-    return null
 }
 
 export default App
